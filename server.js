@@ -5,6 +5,12 @@ const mongoose = require("mongoose");
 const PORT = process.env.PORT || 3001;
 
 const app = express();
+const cors = require("cors");
+
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(bodyParser.json());
 
 mongoose.connect("mongodb://localhost:27017/newlistDB", {
   useNewUrlParser: true,
@@ -12,11 +18,21 @@ mongoose.connect("mongodb://localhost:27017/newlistDB", {
 
 const ListSchema = new mongoose.Schema({ name: String });
 const Item = mongoose.model("Item", ListSchema);
-const item = new Item({ name: "Zildjian" });
-item.save().then(() => console.log("done"));
 
 app.get("/", (req, res) => {
-  res.json({ message: "Hello from server!" });
+  Item.find({}, (err, foundItem) => {
+    res.json({
+      data: foundItem,
+    });
+  });
+});
+
+app.post("/", (req, res) => {
+  const newItem = req.body;
+
+  const item = new Item({ name: req.body.itemName });
+  item.save().then(() => console.log("new item added"));
+  console.log(Item);
 });
 
 app.listen(PORT, () => {
