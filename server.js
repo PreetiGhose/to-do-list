@@ -27,6 +27,17 @@ app.get("/", (req, res) => {
   });
 });
 
+app.post("/delete", (req, res) => {
+  const newItemId = req.body;
+  console.log(newItemId);
+  Item.findByIdAndRemove(newItemId._id, function (err) {
+    if (!err) {
+      console.log("this item is deleted");
+    }
+  });
+  res.redirect("/");
+});
+
 app.post("/", (req, res) => {
   const newItem = req.body;
 
